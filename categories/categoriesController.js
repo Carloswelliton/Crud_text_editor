@@ -66,5 +66,19 @@ router.get("/admin/categories/edit/:id", (req, res) => {
     })
 })
 
+//atualizando dados no sequelize
+router.post("/categories/update", (req, res) => {
+    var id =req.body.id;
+    var title = req.body.title;
+
+    Category.update({title: title, slug: slugify(title)},{
+        where: {
+            id: id
+        }
+    }).then(() => {
+        res.redirect("/admin/categories");
+    })
+})
+
 
 module.exports = router;
