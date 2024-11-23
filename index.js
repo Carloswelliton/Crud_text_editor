@@ -8,6 +8,7 @@ const categoriesController = require("./categories/categoriesController");
 const articleController = require("./articles/ArticleController");
 const Article = require("./articles/Article");
 const Category = require("./categories/Category");
+const { where } = require('sequelize');
 
 //view engine
 app.set('view engine', 'ejs');
@@ -32,10 +33,32 @@ app.use("/", articleController);
 
 app.get("/", (req, res) => {
 
-    Article.findAll().then(articles => {
-        res.render("index", {articles: articles})
+    Article.findAll({
+        order: [
+            ['id', 'desc']
+        ]
+    }).then(articles => {
+        Category.findAll().then(categories => {
+            res.render("index", {articles: articles})
+        })
     })
+})
 
+app.get("/:slug", (req, res) => {
+    var slug = req.params.slug;
+    Article.findOne({
+        where: {
+            slug: slug
+        }
+    }).then(article => {
+            if(article != undefined){
+                res.render("article", {article: article});
+            }else{
+                res.redirect('/');
+            }
+    }).catch(err => {
+        res.redirect("/");
+    })
 })
 
 
